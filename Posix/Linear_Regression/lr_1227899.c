@@ -18,8 +18,7 @@
  * Dr Kevan Buckley, University of Wolverhampton, 2018
  *****************************************************************************/
 
-typedef struct point_t 
-{
+typedef struct point_t{
   double x;
   double y;
 } point_t;
@@ -27,8 +26,16 @@ typedef struct point_t
 int n_data = 1000;
 point_t data[];
 
-void print_data() 
-{
+double threadretval1;
+double threadretval2;
+double threadretval3;
+double threadretval4;
+double threadretval5;
+double threadretval6;
+double threadretval7;
+double threadretval8;
+
+void print_data(){
   int i;
   for(i=0; i<n_data; i++)
   {
@@ -36,20 +43,17 @@ void print_data()
   }
 }
 
-double residual_error(double x, double y, double m, double c) 
-{
+double residual_error(double x, double y, double m, double c){
   double e = (m * x) + c - y;
   return e * e;
 }
 
-double rms_error(double m, double c) 
-{
+double rms_error1(double m, double c){
   int i;
   double mean;
   double error_sum = 0;
   
-  for(i=0; i<n_data; i++) 
-	{
+  for(i=0; i<n_data/8; i++)	{
     error_sum += residual_error(data[i].x, data[i].y, m, c);  
   }
   
@@ -58,8 +62,201 @@ double rms_error(double m, double c)
   return sqrt(mean);
 }
 
-int main() 
-{
+double rms_error2(double m, double c){
+  int i;
+  double mean;
+  double error_sum = 0;
+  
+  for(i=0; i<n_data/8; i++)	{
+    error_sum += residual_error(data[i].x, data[i].y, m, c);  
+  }
+  
+  mean = error_sum / n_data;
+  
+  return sqrt(mean);
+}
+
+double rms_error3(double m, double c){
+  int i;
+  double mean;
+  double error_sum = 0;
+  
+  for(i=0; i<n_data/8; i++)	{
+    error_sum += residual_error(data[i].x, data[i].y, m, c);  
+  }
+  
+  mean = error_sum / n_data;
+  
+  return sqrt(mean);
+}
+
+double rms_error4(double m, double c){
+  int i;
+  double mean;
+  double error_sum = 0;
+  
+  for(i=0; i<n_data/8; i++)	{
+    error_sum += residual_error(data[i].x, data[i].y, m, c);  
+  }
+  
+  mean = error_sum / n_data;
+  
+  return sqrt(mean);
+}
+
+double rms_error5(double m, double c){
+  int i;
+  double mean;
+  double error_sum = 0;
+  
+  for(i=0; i<n_data/8; i++)	{
+    error_sum += residual_error(data[i].x, data[i].y, m, c);  
+  }
+  
+  mean = error_sum / n_data;
+  
+  return sqrt(mean);
+}
+
+double rms_error6(double m, double c){
+  int i;
+  double mean;
+  double error_sum = 0;
+  
+  for(i=0; i<n_data/8; i++)	{
+    error_sum += residual_error(data[i].x, data[i].y, m, c);  
+  }
+  
+  mean = error_sum / n_data;
+  
+  return sqrt(mean);
+}
+
+double rms_error7(double m, double c){
+  int i;
+  double mean;
+  double error_sum = 0;
+  
+  for(i=0; i<n_data/8; i++)	{
+    error_sum += residual_error(data[i].x, data[i].y, m, c);  
+  }
+  
+  mean = error_sum / n_data;
+  
+  return sqrt(mean);
+}
+
+double rms_error8(double m, double c){
+  int i;
+  double mean;
+  double error_sum = 0;
+  
+  for(i=0; i<n_data/8; i++)	{
+    error_sum += residual_error(data[i].x, data[i].y, m, c);  
+  }
+  
+  mean = error_sum / n_data;
+  
+  return sqrt(mean);
+}
+
+void *thread1(void *arg){
+	double *params = (double *)arg;
+	threadretval1  = rms_error1(params[0], params[1]);
+}
+
+void *thread2(void *arg){
+	double *params = (double *)arg;
+	threadretval1  = rms_error1(params[0], params[1]);
+}
+
+void *thread3(void *arg){
+	double *params = (double *)arg;
+	threadretval1  = rms_error1(params[0], params[1]);
+}
+
+void *thread4(void *arg){
+	double *params = (double *)arg;
+	threadretval1  = rms_error1(params[0], params[1]);
+}
+
+void *thread5(void *arg){
+	double *params = (double *)arg;
+	threadretval1  = rms_error1(params[0], params[1]);
+}
+
+void *thread6(void *arg){
+	double *params = (double *)arg;
+	threadretval1  = rms_error1(params[0], params[1]);
+}
+
+void *thread7(void *arg){
+	double *params = (double *)arg;
+	threadretval1  = rms_error1(params[0], params[1]);
+}
+
+void *thread8(void *arg){
+	double *params = (double *)arg;
+	threadretval1  = rms_error1(params[0], params[1]);
+}
+
+
+double rms_error(double m, double c) {
+  double params1[2], params2[2], params3[3], params4[4], params5[5],
+		params6[6], params7[7], params8[8];
+
+  pthread_t pt1, pt2, pt3, pt4, pt5, pt6, pt7, pt8;
+  double mean;
+  double error_sum = 0;
+
+  params1[0] = m;
+  params1[1] = c;
+
+  params2[0] = m;
+  params2[1] = c;
+
+	params3[0] = m;
+  params3[1] = c;
+
+  params4[0] = m;
+  params4[1] = c;
+
+	params5[0] = m;
+  params5[1] = c;
+
+	params6[0] = m;
+  params6[1] = c;
+
+	params7[0] = m;
+  params7[1] = c;
+
+	params8[0] = m;
+  params8[1] = c;
+
+  pthread_create(&pt1, NULL, &thread_1, params1);
+  pthread_create(&pt2, NULL, &thread_2, params2);
+	pthread_create(&pt3, NULL, &thread_3, params3);
+	pthread_create(&pt4, NULL, &thread_4, params4);
+	pthread_create(&pt5, NULL, &thread_5, params5);
+	pthread_create(&pt6, NULL, &thread_6, params6);
+	pthread_create(&pt7, NULL, &thread_7, params7);
+	pthread_create(&pt8, NULL, &thread_8, params8);
+
+  pthread_join(pt1,NULL);
+  pthread_join(pt2,NULL);
+	pthread_join(pt3,NULL);
+	pthread_join(pt4,NULL);  
+	pthread_join(pt5,NULL);
+	pthread_join(pt6,NULL);
+	pthread_join(pt7,NULL);
+	pthread_join(pt8,NULL);
+
+  error_sum = threadretval1 + threadretval2;
+  mean = error_sum / n_data;
+  return sqrt(mean);
+}
+
+int main(){
   int i;
   double bm = 1.3;
   double bc = 10;
@@ -77,19 +274,15 @@ int main()
 
   be = rms_error(bm, bc);
 
-  while(!minimum_found) 
-	{
-    for(i=0;i<8;i++) 
-		{
+  while(!minimum_found){
+    for(i=0;i<8;i++){
       dm[i] = bm + (om[i] * step);
       dc[i] = bc + (oc[i] * step);    
     }
       
-    for(i=0;i<8;i++) 
-		{
+    for(i=0;i<8;i++){
       e[i] = rms_error(dm[i], dc[i]);
-      if(e[i] < best_error) 
-			{
+      if(e[i] < best_error){
         best_error = e[i];
         best_error_i = i;
       }
@@ -97,14 +290,11 @@ int main()
 
    // printf("best m,c is %lf,%lf with error %lf in direction %d\n", 
      // dm[best_error_i], dc[best_error_i], best_error, best_error_i);
-    if(best_error < be) 
-		{
+    if(best_error < be){
       be = best_error;
       bm = dm[best_error_i];
       bc = dc[best_error_i];
-    } 
-		else 
-		{
+    }else{
       minimum_found = 1;
     }
   }
@@ -114,9 +304,7 @@ int main()
   return 0;
 }
 
-point_t data[] = 
-{
-  {82.75,102.99},{65.49,98.18},{78.56,105.35},{68.67,85.29},
+point_t data[] ={ {82.75,102.99},{65.49,98.18},{78.56,105.35},{68.67,85.29},
   {65.81,112.85},{82.84,113.68},{65.55,98.46},{71.98,114.52},
   {73.16,126.43},{76.40,134.02},{76.82,97.29},{47.47,79.78},
   {41.13,78.60},{64.13,97.66},{34.81,71.87},{67.40,124.95},
