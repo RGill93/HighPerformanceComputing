@@ -49,9 +49,17 @@ __device__ int is_a_match(char *attempt)
   nested loops to generate all possible passwords and test whether they match
   the hidden password.
 *****************************************************************************/ 
-__global__ void kernel(char *let)
+__global__ void kernel()
 {
   char i, j;		
+
+	int threadID = threadIdx.x;
+	int blockID = blockIdx.x;
+
+	int tID = blockID * blockDim.x + threadID;
+
+	// prints a unique thread id.
+	printf("Thread id is %d\n", tID);
   
   char password[3];
   password[2] = '\0';
@@ -66,7 +74,7 @@ __global__ void kernel(char *let)
 
       if(is_a_match(password))
 			{
-        //printf("password found: %s\n", password);
+        printf("password found: %s\n, Thread Id is %d\n threadID" , password, tID);
       } 
 			else
 			{
@@ -76,29 +84,25 @@ __global__ void kernel(char *let)
   }
 }
 
-int main(int argc, char** argv)
+int main()
 {	
 	
-	char arrayLetters[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+	char arrayLetters[26] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
 	'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
 
 	char *gpuLetters;
 
-	int threadID = threadIdx.x;
-	int blockID = blockIdx.x;
-
-	// prints a unique thread id.
-	printf("bID=%d combinedchar=&c&c\n", blockID, threadID, let[blockID], let[threadID]);
-
 	//cudamalloc 
-	cudaMalloc((void**) &gpuLetters, sizeof(float) * 26);
+	cudaMalloc((void**) &gpuLetters, 26*sizeof(char));
+
+	cudaMemcpy(arrayLetters, gpuLetters, 26*sizeof(char), cudaMemcpyHostToDevice);
 
 	// kernel to launch the program, 26, 26 for 26 blocks and 26 threads;
-  kernel <<<26, 26>>>(gpuLetters);
+  kernel <<<26, 26>>>();
   cudaThreadSynchronize();	
 
 	//cudamemcpy
-	cudaMemcpy(gpuLetters, &arrayLetters, sizeof(char) * 12, cudaMemcpyHostToDevice);	
+	cudaMemcpy(gpuLetters, arrayLetters, 26*sizeof(char), cudaMemcpyDeviceToHost);
 
   return 0;
 }
