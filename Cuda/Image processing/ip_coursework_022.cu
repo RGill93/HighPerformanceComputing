@@ -412,20 +412,12 @@ unsigned char image[7200] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 
 	unsigned char results[width * height];
 
-__global__ void detect_edges(float *d_in, float *d_out)
-{
-
-	//int threadID = threadIdx.x;
-	//int blockID = blockIdx.x;	
-
-	printf("Block ID is = %d", blockIdx.x);
-	printf("Thread ID is = %d", threadIdx.x);
-
+__global__ void detect_edges(unsigned char *d_in, unsigned char *d_out){
   int i;	
-  int n_pixels = width * height;	
-	char *results;
-  for(i = 0; i < n_pixels; i++)
-	{		
+  int n_pixels = width * height;
+	unsigned char results[width * height];	
+	//char *results;
+  for(i = 0; i < n_pixels; i++){		
     int x, y; // the pixel of interest
     int b, d, f, h; // the pixels adjacent to x,y used for the calculation
     int r; // the result of calculate
@@ -433,12 +425,9 @@ __global__ void detect_edges(float *d_in, float *d_out)
     y = i / width;
     x = i - (width * y);
 
-    if (x == 0 || y == 0 || x == width - 1 || y == height - 1)
-		{
+    if (x == 0 || y == 0 || x == width - 1 || y == height - 1){
       results[i] = 0;
-    }
-		else
-		{
+    }else{
       b = i + width;
       d = i - 1;
       f = i + 1;
@@ -447,31 +436,25 @@ __global__ void detect_edges(float *d_in, float *d_out)
       r = (d_in[i] * 4) + (d_in[b] * -1) + (d_in[d] * -1) + (d_in[f] * -1)
           + (d_in[h] * -1);
 
-      if (r > 0)
-			{ // if the result is positive this is an edge pixel
+      if (r > 0){ // if the result is positive this is an edge pixel
         d_out[i] = 255;
-      } 
-			else
-			{
+      }else{
         d_out[i] = 0;
       }
     }
   }
 }
 
-void tidy_and_exit()
-{
+void tidy_and_exit(){
   exit(0);
 }
 
-void sigint_callback(int signal_number)
-{
+void sigint_callback(int signal_number){
   printf("\nInterrupt from keyboard\n");
   tidy_and_exit();
 }
 
-static void display()
-{
+static void display(){
   glClear(GL_COLOR_BUFFER_BIT);
   glRasterPos4i(-1, -1, 0, 1);
   glDrawPixels(width, height, GL_LUMINANCE, GL_UNSIGNED_BYTE, image);
@@ -480,10 +463,8 @@ static void display()
   glFlush();
 }
 
-static void key_pressed(unsigned char key, int x, int y)
-{
-  switch(key)
-	{
+static void key_pressed(unsigned char key, int x, int y){
+  switch(key){
     case 27: // escape
       tidy_and_exit();
       break;
@@ -494,13 +475,11 @@ static void key_pressed(unsigned char key, int x, int y)
 }
 
 int time_difference(struct timespec *start, struct timespec *finish, 
-                              long long int *difference)
-{
+                              long long int *difference){
   long long int ds =  finish->tv_sec - start->tv_sec; 
   long long int dn =  finish->tv_nsec - start->tv_nsec; 
 
-  if(dn < 0 )
-	{
+  if(dn < 0 ){
     ds--;
     dn += 1000000000; 
   } 
@@ -508,43 +487,27 @@ int time_difference(struct timespec *start, struct timespec *finish,
   return !(*difference > 0);
 }
 
-int main(int argc, char **argv)
-{
-	const int arraySize = sizeof(image);
-	const int arrayBytes = arraySize * sizeof(float);
+int main(int argc, char **argv){
 
-	// generate the input array on the host
-  float h_in[arraySize];
-  for(int i = 0; i < arraySize; i++)
-  {
-    h_in[i] = image[i];
-  }
-	
-  float h_out[arraySize];
+	const int arraySize = (width * height)  * sizeof(unsigned char);
 
 	// declare GPU memory pointers
-  float *d_in;
-  float *d_out;
+  unsigned char *d_in;
+  unsigned char *d_out;
 
 	// allocate GPU memory
-  cudaMalloc((void**) &d_in, arrayBytes);
-  cudaMalloc((void**) &d_out, arrayBytes);
+  cudaMalloc((void**) &d_in, arraySize);
+  cudaMalloc((void**) &d_out, arraySize);
+	
+  cudaMemcpy(d_in, image, arraySize, cudaMemcpyHostToDevice);
+ 	cudaMemcpy(d_out, results, arraySize, cudaMemcpyHostToDevice);
 
 	// executes detect edges, number of threads being used - 7200 to match the image given
-  detect_edges <<<8, 612>>>(d_out, d_in);
+  detect_edges <<<10, 720>>>(d_in, d_out);
   cudaThreadSynchronize();
 
   // copy back the result array to the CPU
-  cudaMemcpy(h_in, d_in, arrayBytes, cudaMemcpyDeviceToHost);
-
-	// print out the resulting array
-  for (int i = 0; i < arraySize; i++)
-	{
-    printf("%f\n", h_out[i]);
-  }	
-
- 	cudaFree(d_in);
-  cudaFree(d_out);
+  cudaMemcpy(results, d_out, arraySize, cudaMemcpyDeviceToHost);
 
 	struct timespec start, finish;   
   long long int time_elapsed;  
